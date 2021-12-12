@@ -3,7 +3,6 @@ type: docker
 name: gitea release change log test
 trigger:
   event:
-    - push
     - tag
 platform:
   os: linux
