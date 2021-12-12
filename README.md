@@ -20,3 +20,5 @@ Drone plugin for creating and tagging Gitea releases change logs
 # plugin params
 * `url`: gitea base url
 * `token`: gitea user access token
+
+![img.png](https://raw.githubusercontent.com/hb0730/drone-plugin-gitea-release-change-log/main/doc/img.png)
