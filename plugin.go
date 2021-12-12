@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"github.com/urfave/cli"
 	"log"
 )
@@ -8,15 +9,36 @@ import (
 type Plugin struct {
 	Debug bool
 	Drone Drone
+	Gitea Gitea
 }
 type Drone struct {
-	Tag string
+	Tag        string
+	Repo       string
+	RepoName   string
+	Owner      string
+	CommitHash string
+}
+type Gitea struct {
+	URL   string
+	Token string
 }
 
-func (p *Plugin) Exec(ctx *cli.Context) error {
+func (p *Plugin) Exec(_ *cli.Context) error {
 	if p.Drone.Tag == "" {
 		log.Println("Skipping gitea release change log")
+		return nil
 	}
-
-	return nil
+	if p.Gitea.URL == "" || p.Gitea.Token == "" {
+		return errors.New("gitea url or token missing")
+	}
+	if p.Debug {
+		log.Println("DRONE:{ tag:", p.Drone.Tag, ",repo:", p.Drone.Repo, "owner:", p.Drone.Owner, "commit hash:", p.Drone.CommitHash, "}")
+		log.Println("gitea:{ url:", p.Gitea.URL, "token:", p.Gitea.Token, "}")
+	}
+	changeLog, err := NewChangeLog(p.Gitea.URL, p.Gitea.Token, p.Drone.Tag, p.Debug,
+		p.Drone)
+	if err != nil {
+		return err
+	}
+	return changeLog.PutRelease()
 }
