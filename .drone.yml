@@ -13,38 +13,11 @@ steps:
     image: alpine/git
     commands:
       - git fetch --tags
-  - name: golang build
-    image: golang:1.16
-    environment:
-      CGO_ENABLED: 0
-      GO111MODULE: "on"
-      GOPROXY: https://goproxy.cn,direct
-    commands:
-      - go get -v -t -d ./...
-      - go build -v -ldflags '-X main.version=${DRONE_BUILD_NUMBER}' -a -o drone-plugin-gitea-release-change-log
-  - name: docker build
-    image: docker
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
-    commands:
-      - ls
-      - docker build -t drone-plugin-gitea-release-change-log .
-      - docker images
   - name: test
-    image: drone-plugin-gitea-release-change-log
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
-    pull: if-not-exists
+    image: hb0730/drone-plugin-gitea-release-change-log
     settings:
       debug: true
       url:
         from_secret: gitea-server
       token:
         from_secret: gitea-token
-
-volumes:
-  - name: dockersock
-    host:
-      path: /var/run/docker.sock
