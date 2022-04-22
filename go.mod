@@ -9,5 +9,5 @@ require (
 	github.com/hashicorp/go-version v1.3.0 // indirect
 	github.com/hb0730/git-change-log v1.0.0
 	github.com/joho/godotenv v1.4.0
-	github.com/urfave/cli v1.22.5
+	github.com/urfave/cli v1.22.7
 )
