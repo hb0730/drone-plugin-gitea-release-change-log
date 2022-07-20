@@ -23,7 +23,7 @@ type Gitea struct {
 	Token string
 }
 
-func (p *Plugin) Exec(_ *cli.Context) error {
+func (p *Plugin) Exec(_ *cli.Context, config ChangeLogConfig) error {
 	if p.Drone.Tag == "" {
 		log.Println("Skipping gitea release change log")
 		return nil
@@ -34,11 +34,12 @@ func (p *Plugin) Exec(_ *cli.Context) error {
 	if p.Debug {
 		log.Println("DRONE:{ tag:", p.Drone.Tag, ",repo:", p.Drone.Repo, "owner:", p.Drone.Owner, "commit hash:", p.Drone.CommitHash, "}")
 		log.Println("gitea:{ url:", p.Gitea.URL, "token:", p.Gitea.Token, "}")
+		log.Println("changelog config:{config:", config.ConfigFile, "sha1:", config.Sha1, "sha2:", config.Sha2, "verbose:", config.Verbose, "}")
 	}
 	changeLog, err := NewChangeLog(p.Gitea.URL, p.Gitea.Token, p.Drone.Tag, p.Debug,
 		p.Drone)
 	if err != nil {
 		return err
 	}
-	return changeLog.PutRelease()
+	return changeLog.PutRelease(config)
 }

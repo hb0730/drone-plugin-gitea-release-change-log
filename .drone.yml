@@ -43,6 +43,7 @@ steps:
         from_secret: gitea-server
       token:
         from_secret: gitea-token
+      change_log_verbose: true
 
 volumes:
   - name: dockersock
