@@ -3,13 +3,16 @@ package main
 import (
 	"code.gitea.io/sdk/gitea"
 	"errors"
-	"github.com/apex/log"
-	"github.com/hb0730/git-change-log"
+	"fmt"
+	gitw "github.com/gookit/gitw"
+	"github.com/gookit/gitw/chlog"
 )
 
 type ChangeLog struct {
 	Debug      bool
-	git        *gitea.Client
+	git        *chlog.Changelog
+	gitea      *gitea.Client
+	repo       *gitw.Repo
 	CurrentTag string
 	Drone      Drone
 }
@@ -26,7 +29,9 @@ func NewChangeLog(url, token, currentTag string, debug bool, drone Drone) (Chang
 	if err != nil {
 		return changelog, err
 	}
-	changelog.git = client
+	changelog.gitea = client
+	changelog.git = chlog.New()
+	changelog.repo = gitw.NewRepo("./")
 	changelog.CurrentTag = currentTag
 	changelog.Drone = drone
 	changelog.Debug = debug
@@ -40,7 +45,7 @@ func (l ChangeLog) PutRelease() error {
 	if err != nil {
 		return err
 	}
-	release, resp, err := l.git.GetReleaseByTag(l.Drone.Owner, l.Drone.RepoName, l.CurrentTag)
+	release, resp, err := l.gitea.GetReleaseByTag(l.Drone.Owner, l.Drone.RepoName, l.CurrentTag)
 	if resp.StatusCode == 404 {
 		option := gitea.CreateReleaseOption{
 			TagName: l.CurrentTag,
@@ -48,7 +53,7 @@ func (l ChangeLog) PutRelease() error {
 			Title:   l.CurrentTag,
 			Note:    changelog,
 		}
-		_, _, err = l.git.CreateRelease(l.Drone.Owner, l.Drone.RepoName, option)
+		_, _, err = l.gitea.CreateRelease(l.Drone.Owner, l.Drone.RepoName, option)
 	} else if resp.StatusCode == 200 {
 		option := gitea.EditReleaseOption{
 
@@ -59,18 +64,23 @@ func (l ChangeLog) PutRelease() error {
 			IsDraft:      &release.IsDraft,
 			IsPrerelease: &release.IsPrerelease,
 		}
-		_, _, err = l.git.EditRelease(l.Drone.Owner, l.Drone.RepoName, release.ID, option)
+		_, _, err = l.gitea.EditRelease(l.Drone.Owner, l.Drone.RepoName, release.ID, option)
 	} else {
 		return err
 	}
 	return err
 }
 func (l ChangeLog) getChangeLogs() (string, error) {
-	var level log.Level
-	if l.Debug {
-		level = log.DebugLevel
-	} else {
-		level = log.InfoLevel
+	sha1 := l.repo.AutoMatchTag("prev")
+	sha2 := l.repo.AutoMatchTag("last")
+	l.git.FetchGitLog(sha1, sha2)
+	err := l.git.Generate()
+	if err != nil {
+		return "", err
 	}
-	return git.GetChangeLogs("", l.CurrentTag, level)
+	changelog := l.git.Changelog()
+	if l.Debug {
+		fmt.Printf("change_log: %s \n", changelog)
+	}
+	return changelog, nil
 }

@@ -60,7 +60,7 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:   "gitea.token",
-			Usage:  "git user token",
+			Usage:  "gitea user token",
 			EnvVar: "PLUGIN_GITEA_TOKEN,PLUGIN_TOKEN,GITEA_TOKEN,TOKEN",
 		},
 	}
