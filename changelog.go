@@ -6,6 +6,10 @@ import (
 	"fmt"
 	gitw "github.com/gookit/gitw"
 	"github.com/gookit/gitw/chlog"
+	"github.com/gookit/goutil/cliutil"
+	"github.com/gookit/goutil/dump"
+	"github.com/gookit/goutil/fsutil"
+	"gopkg.in/yaml.v2"
 )
 
 type ChangeLog struct {
@@ -15,6 +19,12 @@ type ChangeLog struct {
 	repo       *gitw.Repo
 	CurrentTag string
 	Drone      Drone
+}
+type ChangeLogConfig struct {
+	ConfigFile string
+	Sha1       string
+	Sha2       string
+	Verbose    bool
 }
 
 func NewChangeLog(url, token, currentTag string, debug bool, drone Drone) (ChangeLog, error) {
@@ -37,11 +47,11 @@ func NewChangeLog(url, token, currentTag string, debug bool, drone Drone) (Chang
 	changelog.Debug = debug
 	return changelog, nil
 }
-func (l ChangeLog) PutRelease() error {
+func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
 	if l.Drone.Repo == "" || l.Drone.Owner == "" {
 		return errors.New("gitea repo or repo owner missing")
 	}
-	changelog, err := l.getChangeLogs()
+	changelog, err := l.getChangeLogs(config)
 	if err != nil {
 		return err
 	}
@@ -70,11 +80,16 @@ func (l ChangeLog) PutRelease() error {
 	}
 	return err
 }
-func (l ChangeLog) getChangeLogs() (string, error) {
-	sha1 := l.repo.AutoMatchTag("prev")
-	sha2 := l.repo.AutoMatchTag("last")
+func (l ChangeLog) getChangeLogs(config ChangeLogConfig) (string, error) {
+	cfg := chlog.NewDefaultConfig()
+	err := loadConfig(config, l.repo, cfg)
+	if err != nil {
+		return "", err
+	}
+	sha1 := l.repo.AutoMatchTag(config.Sha1)
+	sha2 := l.repo.AutoMatchTag(config.Sha2)
 	l.git.FetchGitLog(sha1, sha2)
-	err := l.git.Generate()
+	err = l.git.Generate()
 	if err != nil {
 		return "", err
 	}
@@ -83,4 +98,24 @@ func (l ChangeLog) getChangeLogs() (string, error) {
 		fmt.Printf("change_log: %s \n", changelog)
 	}
 	return changelog, nil
+}
+func loadConfig(config ChangeLogConfig, repo *gitw.Repo, cfg *chlog.Config) error {
+	yml := fsutil.ReadExistFile(config.ConfigFile)
+	if len(yml) > 0 {
+		err := yaml.Unmarshal(yml, cfg)
+		if err != nil {
+			return err
+		}
+	}
+	if cfg.RepoURL == "" {
+		cfg.RepoURL = repo.DefaultRemoteInfo().URLOfHTTPS()
+	}
+
+	if config.Verbose {
+		cfg.Verbose = true
+		cliutil.Cyanln("Changelog Config:")
+		dump.NoLoc(cfg)
+		fmt.Println()
+	}
+	return nil
 }

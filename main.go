@@ -63,6 +63,28 @@ func main() {
 			Usage:  "gitea user token",
 			EnvVar: "PLUGIN_GITEA_TOKEN,PLUGIN_TOKEN,GITEA_TOKEN,TOKEN",
 		},
+		cli.StringFlag{
+			Name:   "changelog.config",
+			Usage:  "the YAML config file for generate changelog",
+			EnvVar: "PLUGIN_CHANGE_LOG_CONFIG,CHANGE_LOG_CONFIG,CONFIG",
+		},
+		cli.StringFlag{
+			Name:   "changelog.sha1",
+			Usage:  "The old git sha version. allow: tag name, commit id",
+			EnvVar: "PLUGIN_CHANGE_LOG_SHA1,CHANGE_LOG_SHA1,SHA1",
+			Value:  "prev",
+		},
+		cli.StringFlag{
+			Name:   "changelog.sha2",
+			Usage:  "The new git sha version. allow: tag name, commit id",
+			EnvVar: "PLUGIN_CHANGE_LOG_SHA2,CHANGE_LOG_SHA2,SHA2",
+			Value:  "last",
+		},
+		cli.BoolFlag{
+			Name:   "changelog.verbose",
+			Usage:  "show more information",
+			EnvVar: "PLUGIN_CHANGE_LOG_VERBOSE,CHANGE_LOG_VERBOSE,VERBOSE",
+		},
 	}
 	if _, err := os.Stat("/run/drone/env"); err == nil {
 		godotenv.Overload("/run/drone/env")
@@ -86,5 +108,11 @@ func run(ctx *cli.Context) error {
 			Token: ctx.String("gitea.token"),
 		},
 	}
-	return plugin.Exec(ctx)
+	changeConfig := ChangeLogConfig{
+		ConfigFile: ctx.String("changelog.config"),
+		Sha1:       ctx.String("changelog.sha1"),
+		Sha2:       ctx.String("changelog.sha2"),
+		Verbose:    ctx.Bool("changelog.verbose"),
+	}
+	return plugin.Exec(ctx, changeConfig)
 }
