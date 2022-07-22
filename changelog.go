@@ -14,7 +14,6 @@ import (
 
 type ChangeLog struct {
 	Debug      bool
-	git        *chlog.Changelog
 	gitea      *gitea.Client
 	repo       *gitw.Repo
 	CurrentTag string
@@ -36,7 +35,6 @@ func NewChangeLog(plugin Plugin) (ChangeLog, error) {
 		return changelog, err
 	}
 	changelog.gitea = client
-	changelog.git = chlog.New()
 	changelog.repo = gitw.NewRepo(plugin.ChangeLogConfig.RepoPath)
 	changelog.CurrentTag = drone.Tag
 	changelog.Drone = drone
@@ -82,14 +80,16 @@ func (l ChangeLog) getChangeLogs(config ChangeLogConfig) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	cl := chlog.NewWithConfig(cfg)
+
 	sha1 := l.repo.AutoMatchTag(config.Sha1)
 	sha2 := l.repo.AutoMatchTag(config.Sha2)
-	l.git.FetchGitLog(sha1, sha2)
-	err = l.git.Generate()
+	cl.FetchGitLog(sha1, sha2)
+	err = cl.Generate()
 	if err != nil {
 		return "", err
 	}
-	changelog := l.git.Changelog()
+	changelog := cl.Changelog()
 	if l.Debug {
 		fmt.Printf("change_log: %s \n", changelog)
 	}
