@@ -1,15 +1,16 @@
 package main
 
 import (
-	"errors"
+	"fmt"
 	"github.com/urfave/cli"
 	"log"
 )
 
 type Plugin struct {
-	Debug bool
-	Drone Drone
-	Gitea Gitea
+	Debug           bool
+	Drone           Drone
+	Gitea           Gitea
+	ChangeLogConfig ChangeLogConfig
 }
 type Drone struct {
 	Tag        string
@@ -18,28 +19,48 @@ type Drone struct {
 	Owner      string
 	CommitHash string
 }
+
+func (d Drone) toString() string {
+	return fmt.Sprintf(
+		"DRONE: {tag: %s,repo:%s ,repo_name: %s,owner: %s,commit_hash: %s}",
+		d.Tag, d.Repo, d.RepoName, d.Owner, d.CommitHash)
+}
+
 type Gitea struct {
 	URL   string
 	Token string
 }
 
-func (p *Plugin) Exec(_ *cli.Context, config ChangeLogConfig) error {
+func (g Gitea) toString() string {
+	return fmt.Sprintf("GITEA: {url: %s,token: %s}", g.URL, g.Token)
+}
+
+type ChangeLogConfig struct {
+	ConfigFile string
+	RepoPath   string
+	Sha1       string
+	Sha2       string
+	Verbose    bool
+}
+
+func (c ChangeLogConfig) toString() string {
+	return fmt.Sprintf("CHANGE_LOG_CONFIG: {config_file: %s,repo_path: %s,sha1: %s,sha2: %s,verbose: %t }",
+		c.ConfigFile, c.RepoPath, c.Sha1, c.Sha2, c.Verbose)
+}
+
+func (p *Plugin) Exec(_ *cli.Context) error {
 	if p.Drone.Tag == "" {
 		log.Println("Skipping gitea release change log")
 		return nil
 	}
-	if p.Gitea.URL == "" || p.Gitea.Token == "" {
-		return errors.New("gitea url or token missing")
-	}
 	if p.Debug {
-		log.Println("DRONE:{ tag:", p.Drone.Tag, ",repo:", p.Drone.Repo, "owner:", p.Drone.Owner, "commit hash:", p.Drone.CommitHash, "}")
-		log.Println("gitea:{ url:", p.Gitea.URL, "token:", p.Gitea.Token, "}")
-		log.Println("changelog config:{config:", config.ConfigFile, "sha1:", config.Sha1, "sha2:", config.Sha2, "verbose:", config.Verbose, "}")
+		log.Println(p.Drone.toString())
+		log.Println(p.Gitea.toString())
+		log.Println(p.ChangeLogConfig.toString())
 	}
-	changeLog, err := NewChangeLog(p.Gitea.URL, p.Gitea.Token, p.Drone.Tag, p.Debug,
-		p.Drone)
+	changeLog, err := NewChangeLog(*p)
 	if err != nil {
 		return err
 	}
-	return changeLog.PutRelease(config)
+	return changeLog.PutRelease(p.ChangeLogConfig)
 }

@@ -69,6 +69,12 @@ func main() {
 			EnvVar: "PLUGIN_CHANGE_LOG_CONFIG,CHANGE_LOG_CONFIG,CONFIG",
 		},
 		cli.StringFlag{
+			Name:   "changelog.repo_path",
+			Usage:  "git repo path,default:./",
+			EnvVar: "PLUGIN_CHANGE_LOG_REPO_PATH,CHANGE_LOG_REPO_PATH,REPO_PATH",
+			Value:  "./",
+		},
+		cli.StringFlag{
 			Name:   "changelog.sha1",
 			Usage:  "The old git sha version. allow: tag name, commit id",
 			EnvVar: "PLUGIN_CHANGE_LOG_SHA1,CHANGE_LOG_SHA1,SHA1",
@@ -107,12 +113,14 @@ func run(ctx *cli.Context) error {
 			URL:   ctx.String("gitea.url"),
 			Token: ctx.String("gitea.token"),
 		},
+
+		ChangeLogConfig: ChangeLogConfig{
+			ConfigFile: ctx.String("changelog.config"),
+			RepoPath:   ctx.String("changelog.repo_path"),
+			Sha1:       ctx.String("changelog.sha1"),
+			Sha2:       ctx.String("changelog.sha2"),
+			Verbose:    ctx.Bool("changelog.verbose"),
+		},
 	}
-	changeConfig := ChangeLogConfig{
-		ConfigFile: ctx.String("changelog.config"),
-		Sha1:       ctx.String("changelog.sha1"),
-		Sha2:       ctx.String("changelog.sha2"),
-		Verbose:    ctx.Bool("changelog.verbose"),
-	}
-	return plugin.Exec(ctx, changeConfig)
+	return plugin.Exec(ctx)
 }

@@ -20,31 +20,27 @@ type ChangeLog struct {
 	CurrentTag string
 	Drone      Drone
 }
-type ChangeLogConfig struct {
-	ConfigFile string
-	Sha1       string
-	Sha2       string
-	Verbose    bool
-}
 
-func NewChangeLog(url, token, currentTag string, debug bool, drone Drone) (ChangeLog, error) {
+func NewChangeLog(plugin Plugin) (ChangeLog, error) {
 	var changelog ChangeLog
-	if url == "" || token == "" {
+	giteaConf := plugin.Gitea
+	if giteaConf.URL == "" || giteaConf.Token == "" {
 		return changelog, errors.New("gitea url or token missing")
 	}
-	if currentTag == "" {
+	drone := plugin.Drone
+	if drone.Tag == "" {
 		return changelog, errors.New("current tag missing")
 	}
-	client, err := gitea.NewClient(url, gitea.SetToken(token))
+	client, err := gitea.NewClient(giteaConf.URL, gitea.SetToken(giteaConf.Token))
 	if err != nil {
 		return changelog, err
 	}
 	changelog.gitea = client
 	changelog.git = chlog.New()
-	changelog.repo = gitw.NewRepo("./")
-	changelog.CurrentTag = currentTag
+	changelog.repo = gitw.NewRepo(plugin.ChangeLogConfig.RepoPath)
+	changelog.CurrentTag = drone.Tag
 	changelog.Drone = drone
-	changelog.Debug = debug
+	changelog.Debug = plugin.Debug
 	return changelog, nil
 }
 func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
