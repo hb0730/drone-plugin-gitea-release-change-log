@@ -10,12 +10,12 @@ import (
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/fsutil"
 	"gopkg.in/yaml.v2"
+	"strings"
 )
 
 type ChangeLog struct {
 	Debug      bool
 	gitea      *gitea.Client
-	repo       *gitw.Repo
 	CurrentTag string
 	Drone      Drone
 }
@@ -35,7 +35,6 @@ func NewChangeLog(plugin Plugin) (ChangeLog, error) {
 		return changelog, err
 	}
 	changelog.gitea = client
-	changelog.repo = gitw.NewRepo(plugin.ChangeLogConfig.RepoPath)
 	changelog.CurrentTag = drone.Tag
 	changelog.Drone = drone
 	changelog.Debug = plugin.Debug
@@ -45,7 +44,7 @@ func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
 	if l.Drone.Repo == "" || l.Drone.Owner == "" {
 		return errors.New("gitea repo or repo owner missing")
 	}
-	changelog, err := l.getChangeLogs(config)
+	changelog, err := l.ChangeLogs(config)
 	if err != nil {
 		return err
 	}
@@ -74,16 +73,33 @@ func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
 	}
 	return err
 }
-func (l ChangeLog) getChangeLogs(config ChangeLogConfig) (string, error) {
+func (l ChangeLog) ChangeLogs(config ChangeLogConfig) (string, error) {
+	repo := gitw.NewRepo(config.RepoPath)
 	cfg := chlog.NewDefaultConfig()
-	err := loadConfig(config, l.repo, cfg)
+	err := loadConfig(config, repo, cfg)
 	if err != nil {
 		return "", err
 	}
 	cl := chlog.NewWithConfig(cfg)
+	sha2 := ""
+	if strings.ToLower(config.Sha2) == gitw.TagLast {
+		sha2 = l.CurrentTag
+	} else {
+		sha2 = repo.AutoMatchTag(config.Sha2)
+	}
+	sha1 := ""
+	if strings.ToLower(config.Sha1) == gitw.TagPrev {
+		sha1, err = getPreviousTag(repo, sha2)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		sha1 = repo.AutoMatchTag(config.Sha1)
+	}
 
-	sha1 := l.repo.AutoMatchTag(config.Sha1)
-	sha2 := l.repo.AutoMatchTag(config.Sha2)
+	if l.Debug {
+		fmt.Printf("sh1: %s ,sh2: %s \n", sha1, sha2)
+	}
 	cl.FetchGitLog(sha1, sha2)
 	err = cl.Generate()
 	if err != nil {
@@ -114,4 +130,15 @@ func loadConfig(config ChangeLogConfig, repo *gitw.Repo, cfg *chlog.Config) erro
 		fmt.Println()
 	}
 	return nil
+}
+
+func getPreviousTag(repo *gitw.Repo, currentTag string) (string, error) {
+	prev, err := repo.Cmd("describe", "--tags", "--abbrev=0", fmt.Sprintf("tags/%s^", currentTag)).Output()
+	if err != nil {
+		prev, err = repo.Cmd("rev-list", "--max-parents=0", "HEAD").Output()
+	}
+	if err != nil {
+		return "", err
+	}
+	return gitw.FirstLine(prev), nil
 }

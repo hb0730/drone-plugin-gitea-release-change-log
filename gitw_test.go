@@ -23,8 +23,8 @@ func TestGitChangelog(t *testing.T) {
 		cfg.RepoURL = "https://github.com/hb0730/drone-plugin-gitea-release-change-log"
 	})
 	repo := gitw.NewRepo("./")
-	sha1 := repo.AutoMatchTag("1.0.0")
-	sha2 := repo.AutoMatchTag("2.0.0")
+	sha1 := repo.AutoMatchTag("prev")
+	sha2 := repo.AutoMatchTag("last")
 	// fetch git log
 	cl.FetchGitLog(sha1, sha2)
 
@@ -33,4 +33,23 @@ func TestGitChangelog(t *testing.T) {
 
 	// dump
 	fmt.Println(cl.Changelog())
+}
+
+func TestGitTags(t *testing.T) {
+	cl := chlog.NewWithConfig(chlog.NewDefaultConfig())
+	cl.WithConfigFn(func(cfg *chlog.Config) {
+		cfg.RepoURL = "https://github.com/hb0730/drone-plugin-gitea-release-change-log"
+	})
+	repo := gitw.NewRepo("./")
+	sha1, err := repo.Cmd("describe", "--tags", "--abbrev=0").Output()
+	if err != nil {
+		t.Error(err)
+	}
+	sha1 = gitw.FirstLine(sha1)
+	sha2, err := repo.Cmd("describe", "--tags", "--abbrev=0", fmt.Sprintf("tags/%s^", sha1)).Output()
+	if err != nil {
+		t.Error(err)
+	}
+	sha2 = gitw.FirstLine(sha2)
+	t.Logf("sh1: %s,sha2: %s \n", sha1, sha2)
 }
