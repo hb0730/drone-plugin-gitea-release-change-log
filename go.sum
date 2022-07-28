@@ -13,8 +13,9 @@ github.com/gookit/color v1.5.1/go.mod h1:wZFzea4X8qN6vHOSP2apMb4/+w/orMznEzYsIHP
 github.com/gookit/gitw v0.2.4 h1:dwTPQqSeLwTz4u+wAJUEPYthhHZPTokO53LfIeko+mk=
 github.com/gookit/gitw v0.2.4/go.mod h1:H/QH6ta0LeUDcYOW6D8csjrQ51cZlm/gWHyiTMajAiY=
 github.com/gookit/goutil v0.5.4/go.mod h1:NQJY4PEwCCW27s4bIxjEJQbsPnsxVhQqRF2xU6L3Qrk=
-github.com/gookit/goutil v0.5.5 h1:poRlymIRJ+X++eWAsbqge7lZptrqqfwU6jtvRDC/HeM=
 github.com/gookit/goutil v0.5.5/go.mod h1:FqRBhxNAGeHQKODXK6yfT3TR5jZiJH2W3QF5H+pRkvg=
+github.com/gookit/goutil v0.5.7 h1:WaeQ96zRB/69ho5fOcOb1J2diRAMXX5i9Pm1z5Uh2v4=
+github.com/gookit/goutil v0.5.7/go.mod h1:Cmt+ahuf18EHMAlF6EoOUD/KAdYcD7FdVUbpZC+zTfc=
 github.com/gookit/gsr v0.0.7 h1:xtxVOkCq3KVBt9+koMSvpr7cVMnlKDsqO7gI5f7OTEE=
 github.com/gookit/gsr v0.0.7/go.mod h1:Q3CLTuluDDyk9/Du6xM721lG9/LQ3ywZde9bjmHyWA8=
 github.com/gookit/slog v0.3.3 h1:zCd+XhbKXXDhtrtlNVuDuFLDm1K4MEY9LbmR6WYf4hE=
@@ -43,8 +44,9 @@ github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81P
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
 github.com/stretchr/testify v1.7.4/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
-github.com/stretchr/testify v1.7.5 h1:s5PTfem8p8EbKQOctVV53k6jCJt3UX4IEJzwh+C324Q=
 github.com/stretchr/testify v1.7.5/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
+github.com/stretchr/testify v1.8.0 h1:pSgiaMZlXftHpm5L7V1+rVB+AZJydKsMxsQBIJw4PKk=
+github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/urfave/cli v1.22.9 h1:cv3/KhXGBGjEXLC4bH0sLuJ9BewaAbpk5oyMOveu4pw=
 github.com/urfave/cli v1.22.9/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
