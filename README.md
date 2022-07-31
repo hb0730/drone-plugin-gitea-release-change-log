@@ -22,6 +22,7 @@ Drone plugin for creating and tagging Gitea releases change logs
 * `url`: gitea base url
 * `token`: gitea user access token
 * `change_log_config`: the YAML config file for generate changelog
+* `change_log_tag_type`: sort git tag type,default: 1 creatordate sort, see [gitw](https://github.com/gookit/gitw)
 * `change_log_repo_path`: [gitw](https://github.com/gookit/gitw) create repo path
 * `change_log_sha1`: The old git sha version. allow: tag name, commit id,default: prev
 * `change_log_sha2`: The new git sha version. allow: tag name, commit id,default: last

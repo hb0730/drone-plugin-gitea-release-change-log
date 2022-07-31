@@ -66,30 +66,36 @@ func main() {
 		cli.StringFlag{
 			Name:   "changelog.config",
 			Usage:  "the YAML config file for generate changelog",
-			EnvVar: "PLUGIN_CHANGE_LOG_CONFIG,CHANGE_LOG_CONFIG,CONFIG",
+			EnvVar: "PLUGIN_CHANGE_LOG_CONFIG,PLUGIN_LOG_CONFIG,CHANGE_LOG_CONFIG,CONFIG",
+		},
+		cli.IntFlag{
+			Name:   "changelog.tag_type",
+			Usage:  "repo tags sort type,default: 1 creatordate sort",
+			EnvVar: "PLUGIN_CHANGE_LOG_TAG_TYPE,PLUGIN_TAG_TYPE,CHANGE_LOG_TAG_TYPE,LOG_TAG_TYPE",
+			Value:  1,
 		},
 		cli.StringFlag{
 			Name:   "changelog.repo_path",
 			Usage:  "git repo path,default:./",
-			EnvVar: "PLUGIN_CHANGE_LOG_REPO_PATH,CHANGE_LOG_REPO_PATH,REPO_PATH",
+			EnvVar: "PLUGIN_CHANGE_LOG_REPO_PATH,PLUGIN_REPO_PATH,CHANGE_LOG_REPO_PATH,REPO_PATH",
 			Value:  "./",
 		},
 		cli.StringFlag{
 			Name:   "changelog.sha1",
 			Usage:  "The old git sha version. allow: tag name, commit id",
-			EnvVar: "PLUGIN_CHANGE_LOG_SHA1,CHANGE_LOG_SHA1,SHA1",
+			EnvVar: "PLUGIN_CHANGE_LOG_SHA1,PLUGIN_SHA1,CHANGE_LOG_SHA1,SHA1",
 			Value:  "prev",
 		},
 		cli.StringFlag{
 			Name:   "changelog.sha2",
 			Usage:  "The new git sha version. allow: tag name, commit id",
-			EnvVar: "PLUGIN_CHANGE_LOG_SHA2,CHANGE_LOG_SHA2,SHA2",
+			EnvVar: "PLUGIN_CHANGE_LOG_SHA2,PLUGIN_SHA2,CHANGE_LOG_SHA2,SHA2",
 			Value:  "last",
 		},
 		cli.BoolFlag{
 			Name:   "changelog.verbose",
 			Usage:  "show more information",
-			EnvVar: "PLUGIN_CHANGE_LOG_VERBOSE,CHANGE_LOG_VERBOSE,VERBOSE",
+			EnvVar: "PLUGIN_CHANGE_LOG_VERBOSE,PLUGIN_LOG_VERBOSE,CHANGE_LOG_VERBOSE,VERBOSE",
 		},
 	}
 	if _, err := os.Stat("/run/drone/env"); err == nil {
@@ -116,6 +122,7 @@ func run(ctx *cli.Context) error {
 
 		ChangeLogConfig: ChangeLogConfig{
 			ConfigFile: ctx.String("changelog.config"),
+			TagType:    ctx.Int("changelog.tag_type"),
 			RepoPath:   ctx.String("changelog.repo_path"),
 			Sha1:       ctx.String("changelog.sha1"),
 			Sha2:       ctx.String("changelog.sha2"),

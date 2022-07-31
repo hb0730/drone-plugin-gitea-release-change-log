@@ -80,8 +80,8 @@ func (l ChangeLog) ChangeLogs(config ChangeLogConfig) (string, error) {
 		return "", err
 	}
 	cl := chlog.NewWithConfig(cfg)
-	sha1 := repo.AutoMatchTagByType(config.Sha1, gitw.CreatorDateTagType)
-	sha2 := repo.AutoMatchTagByType(config.Sha2, gitw.CreatorDateTagType)
+	sha1 := repo.AutoMatchTagByType(config.Sha1, config.TagType)
+	sha2 := repo.AutoMatchTagByType(config.Sha2, config.TagType)
 	if l.Debug {
 		fmt.Printf("sh1: %s ,sh2: %s \n", sha1, sha2)
 	}
