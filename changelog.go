@@ -103,6 +103,10 @@ func loadConfig(config ChangeLogConfig, repo *gitw.Repo, cfg *chlog.Config) erro
 		if err != nil {
 			return err
 		}
+	} else if len(config.ConfigStr) > 0 {
+		if err := yaml.Unmarshal([]byte(config.ConfigStr), config); err != nil {
+			return err
+		}
 	}
 	if cfg.RepoURL == "" {
 		cfg.RepoURL = repo.DefaultRemoteInfo().URLOfHTTPS()

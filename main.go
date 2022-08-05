@@ -68,6 +68,11 @@ func main() {
 			Usage:  "the YAML config file for generate changelog",
 			EnvVar: "PLUGIN_CHANGE_LOG_CONFIG,PLUGIN_LOG_CONFIG,CHANGE_LOG_CONFIG,CONFIG",
 		},
+		cli.StringFlag{
+			Name:   "changelog.config_str",
+			Usage:  "the YAML string type for generate changelog,priority is lower than file config",
+			EnvVar: "PLUGIN_CHANGE_LOG_CONFIG_STR,PLUGIN_LOG_CONFIG_STR,CHANGE_LOG_CONFIG_STR,CONFIG_STR",
+		},
 		cli.IntFlag{
 			Name:   "changelog.tag_type",
 			Usage:  "repo tags sort type,default: 1 creatordate sort",
@@ -122,6 +127,7 @@ func run(ctx *cli.Context) error {
 
 		ChangeLogConfig: ChangeLogConfig{
 			ConfigFile: ctx.String("changelog.config"),
+			ConfigStr:  ctx.String("changelog.config_str"),
 			TagType:    ctx.Int("changelog.tag_type"),
 			RepoPath:   ctx.String("changelog.repo_path"),
 			Sha1:       ctx.String("changelog.sha1"),

@@ -37,6 +37,7 @@ func (g Gitea) toString() string {
 
 type ChangeLogConfig struct {
 	ConfigFile string
+	ConfigStr  string
 	TagType    int
 	RepoPath   string
 	Sha1       string
@@ -45,8 +46,8 @@ type ChangeLogConfig struct {
 }
 
 func (c ChangeLogConfig) toString() string {
-	return fmt.Sprintf("CHANGE_LOG_CONFIG: {config_file: %s,tag_sort:%d, repo_path: %s,sha1: %s,sha2: %s,verbose: %t }",
-		c.ConfigFile, c.TagType, c.RepoPath, c.Sha1, c.Sha2, c.Verbose)
+	return fmt.Sprintf("CHANGE_LOG_CONFIG: {config_file: %s,config_str: %s,tag_sort:%d, repo_path: %s,sha1: %s,sha2: %s,verbose: %t }",
+		c.ConfigFile, c.ConfigStr, c.TagType, c.RepoPath, c.Sha1, c.Sha2, c.Verbose)
 }
 
 func (p *Plugin) Exec(_ *cli.Context) error {
