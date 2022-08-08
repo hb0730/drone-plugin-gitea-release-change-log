@@ -14,7 +14,7 @@ steps:
     commands:
       - git fetch --tags
   - name: golang build
-    image: golang:1.16
+    image: golang:1.18
     environment:
       CGO_ENABLED: 0
       GO111MODULE: "on"
