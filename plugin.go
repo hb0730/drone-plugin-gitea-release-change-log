@@ -16,14 +16,15 @@ type Drone struct {
 	Tag        string
 	Repo       string
 	RepoName   string
+	RepoBrand  string
 	Owner      string
 	CommitHash string
 }
 
 func (d Drone) toString() string {
 	return fmt.Sprintf(
-		"DRONE: {tag: %s,repo:%s ,repo_name: %s,owner: %s,commit_hash: %s}",
-		d.Tag, d.Repo, d.RepoName, d.Owner, d.CommitHash)
+		"DRONE: {tag: %s,repo:%s ,repo_name: %s,repo_brand: %s,owner: %s,commit_hash: %s}",
+		d.Tag, d.Repo, d.RepoName, d.RepoBrand, d.Owner, d.CommitHash)
 }
 
 type Gitea struct {

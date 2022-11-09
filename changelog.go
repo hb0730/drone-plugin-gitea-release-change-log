@@ -51,7 +51,7 @@ func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
 	if resp.StatusCode == 404 {
 		option := gitea.CreateReleaseOption{
 			TagName: l.CurrentTag,
-			Target:  l.Drone.CommitHash,
+			Target:  l.Drone.RepoBrand,
 			Title:   l.CurrentTag,
 			Note:    changelog,
 		}
