@@ -123,7 +123,7 @@ func run(ctx *cli.Context) error {
 			Tag:        ctx.String("drone.tag"),
 			Repo:       ctx.String("drone.repo"),
 			RepoName:   ctx.String("drone.repo.name"),
-			RepoBrand:  ctx.String("drone.repo.brand"),
+			RepoBrand:  ctx.String("drone.repo.branch"),
 			Owner:      ctx.String("drone.repo.owner"),
 			CommitHash: ctx.String("drone.commit"),
 		},
