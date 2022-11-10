@@ -48,17 +48,18 @@ func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
 		return err
 	}
 	release, resp, err := l.gitea.GetReleaseByTag(l.Drone.Owner, l.Drone.RepoName, l.CurrentTag)
+	if err != nil {
+		return err
+	}
 	if resp.StatusCode == 404 {
 		option := gitea.CreateReleaseOption{
 			TagName: l.CurrentTag,
-			//Target:  l.Drone.CommitHash,
-			Title: l.CurrentTag,
-			Note:  changelog,
+			Title:   l.CurrentTag,
+			Note:    changelog,
 		}
 		_, _, err = l.gitea.CreateRelease(l.Drone.Owner, l.Drone.RepoName, option)
 	} else if resp.StatusCode == 200 {
 		option := gitea.EditReleaseOption{
-
 			TagName:      release.TagName,
 			Target:       release.Target,
 			Title:        release.Title,
