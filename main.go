@@ -30,27 +30,32 @@ func main() {
 			},
 			&cli.StringFlag{
 				Name:    "drone.tag",
-				Usage:   "drone tag",
+				Usage:   "Provides the tag for the current running build. This value is only populated for tag events and promotion events that are derived from tags",
 				EnvVars: []string{"DRONE_TAG"},
 			},
 			&cli.StringFlag{
 				Name:    "drone.repo",
-				Usage:   "drone repo",
+				Usage:   "Provides the full repository name for the current running build",
 				EnvVars: []string{"DRONE_REPO"},
 			},
 			&cli.StringFlag{
 				Name:    "drone.repo.name",
-				Usage:   "drone repo name",
+				Usage:   "Provides the repository name for the current running build",
 				EnvVars: []string{"DRONE_REPO_NAME"},
 			},
 			&cli.StringFlag{
+				Name:    "drone.repo.branch",
+				Usage:   "Provides the default repository branch for the current running build.",
+				EnvVars: []string{"DRONE_REPO_BRANCH"},
+			},
+			&cli.StringFlag{
 				Name:    "drone.repo.owner",
-				Usage:   "drone repo owner",
+				Usage:   "Provides the repository namespace for the current running build. The namespace is an alias for the source control management account that owns the repository",
 				EnvVars: []string{"DRONE_REPO_OWNER"},
 			},
 			&cli.StringFlag{
 				Name:    "drone.commit",
-				Usage:   "drone commit hash",
+				Usage:   "Provides the git commit sha for the current running build.",
 				EnvVars: []string{"DRONE_COMMIT"},
 			},
 			&cli.StringFlag{
