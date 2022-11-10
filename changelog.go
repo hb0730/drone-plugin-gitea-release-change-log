@@ -43,7 +43,7 @@ func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
 	if l.Drone.Repo == "" || l.Drone.Owner == "" {
 		return errors.New("gitea repo or repo owner missing")
 	}
-	changelog, err := l.ChangeLogs(config)
+	changelog, sh1, _, err := l.ChangeLogs(config)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
 	if resp.StatusCode == 404 {
 		option := gitea.CreateReleaseOption{
 			TagName: l.CurrentTag,
-			Target:  config.Sha1,
+			Target:  sh1,
 			Title:   l.CurrentTag,
 			Note:    changelog,
 		}
@@ -72,12 +72,12 @@ func (l ChangeLog) PutRelease(config ChangeLogConfig) error {
 	}
 	return err
 }
-func (l ChangeLog) ChangeLogs(config ChangeLogConfig) (string, error) {
+func (l ChangeLog) ChangeLogs(config ChangeLogConfig) (string, string, string, error) {
 	repo := gitw.NewRepo(config.RepoPath)
 	cfg := chlog.NewDefaultConfig()
 	err := loadConfig(config, repo, cfg)
 	if err != nil {
-		return "", err
+		return "", "", "", err
 	}
 	cl := chlog.NewWithConfig(cfg)
 	sha1 := repo.AutoMatchTagByType(config.Sha1, config.TagType)
@@ -88,13 +88,13 @@ func (l ChangeLog) ChangeLogs(config ChangeLogConfig) (string, error) {
 	cl.FetchGitLog(sha1, sha2)
 	err = cl.Generate()
 	if err != nil {
-		return "", err
+		return "", "", "", err
 	}
 	changelog := cl.Changelog()
 	if l.Debug {
 		fmt.Printf("change_log: %s \n", changelog)
 	}
-	return changelog, nil
+	return changelog, sha1, sha2, nil
 }
 func loadConfig(config ChangeLogConfig, repo *gitw.Repo, cfg *chlog.Config) error {
 	yml := fsutil.ReadExistFile(config.ConfigFile)
