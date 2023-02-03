@@ -7,7 +7,7 @@ require (
 	github.com/gookit/gitw v0.2.7
 	github.com/gookit/goutil v0.5.15
 	github.com/joho/godotenv v1.4.0
-	github.com/urfave/cli/v2 v2.23.5
+	github.com/urfave/cli/v2 v2.24.3
 	gopkg.in/yaml.v2 v2.4.0
 )
 
